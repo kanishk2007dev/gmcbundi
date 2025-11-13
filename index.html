@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Seniors! ❤️</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Use the Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Import the Inter font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+        /* Heart animation */
+        .heart {
+            position: fixed; /* Use fixed to float over everything */
+            top: -10vh; /* Start above the screen */
+            font-size: 1.5rem;
+            pointer-events: none; /* Hearts shouldn't be clickable */
+            z-index: 10; /* A high z-index, but below the main content */
+            animation: fall linear;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                /* Move down and add a slight horizontal drift and rotation for effect */
+                transform: translateY(110vh) rotate(var(--rotate-end)) translateX(var(--drift));
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-300 via-red-300 to-pink-400 h-screen w-full overflow-hidden flex items-center justify-center relative">
+
+    <!-- Main content card with glassmorphism effect -->
+    <div class="relative z-20 bg-white/40 backdrop-blur-lg rounded-2xl shadow-xl p-8 md:p-12 text-center text-gray-800 max-w-lg mx-4">
+        <h1 class="text-3xl md:text-5xl font-bold text-red-700 drop-shadow-sm mb-4">
+            Welcome, Seniors!
+        </h1>
+        <p class="text-lg md:text-2xl font-medium text-red-900">
+            To the amazing girls and boys of Government Medical College, Bundi.
+        </p>
+        <p class="text-xl md:text-3xl font-medium text-red-800 mt-4">
+            <span id="time-greeting"></span> आदरणीय आयुर्विज्ञान श्रेष्ठ
+        </p>
+        <div class="text-5xl md:text-7xl mt-6 text-pink-500 animate-pulse">
+            💖
+        </div>
+    </div>
+
+    <!-- Container for hearts (optional, but good for organization) -->
+    <div id="heart-container" class="absolute inset-0 z-10"></div>
+
+    <script>
+        const heartContainer = document.getElementById('heart-container') || document.body;
+
+        // --- नई ग्रीटिंग स्क्रिप्ट ---
+        function setGreeting() {
+            const greetingElement = document.getElementById('time-greeting');
+            if (!greetingElement) return; // सुनिश्चित करें कि एलिमेंट मौजूद है
+
+            const currentHour = new Date().getHours(); // 0-23
+            let greetingText = '';
+
+            // सुबह 4:00 बजे से 11:59 बजे तक
+            if (currentHour >= 4 && currentHour < 12) {
+                greetingText = 'शुभ प्रभात';
+            }
+            // दोपहर 12:00 बजे से शाम 4:59 बजे (17:00) तक
+            else if (currentHour >= 12 && currentHour < 17) {
+                greetingText = 'शुभ अपराह्न';
+            }
+            // शाम 5:00 बजे से सुबह 3:59 बजे तक
+            else {
+                greetingText = 'शुभ संध्या';
+            }
+            
+            greetingElement.innerText = greetingText;
+        }
+        
+        // पेज लोड होते ही ग्रीटिंग सेट करें
+        setGreeting();
+        // --- स्क्रिप्ट का अंत ---
+
+        // Array of different colored heart emojis
+        const heartEmojis = ['❤️', '💖', '💗', '💙', '💚', '💛', '💜', '🧡', '💕', '💞'];
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            
+            // Use a random heart emoji from the array
+            heart.innerText = heartEmojis[Math.floor(Math.random() * heartEmojis.length)]; 
+            
+            // Randomize starting position and size
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 1.5 + 0.75) + 'rem'; // 0.75rem to 2.25rem
+            
+            // Randomize animation duration
+            const duration = Math.random() * 5 + 5; // 5 to 10 seconds
+            heart.style.animationDuration = duration + 's';
+            
+            // Randomize animation properties (drift and rotation)
+            heart.style.setProperty('--drift', (Math.random() - 0.5) * 200 + 'px'); // -100px to +100px
+            heart.style.setProperty('--rotate-end', (Math.random() - 0.5) * 60 + 'deg'); // -30deg to +30deg
+            
+            // Randomize opacity
+            heart.style.opacity = Math.random() * 0.5 + 0.3; // 0.3 to 0.8
+
+            heartContainer.appendChild(heart);
+
+            // Remove the heart after its animation is done
+            setTimeout(() => {
+                heart.remove();
+            }, duration * 1000); // duration is in seconds, so * 1000 for ms
+        }
+
+        // Create a new heart every 300ms
+        setInterval(createHeart, 300);
+    </script>
+</body>
+</html>
