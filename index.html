@@ -1,130 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
+    <!-- Ensures proper scaling on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome Seniors! ❤️</title>
-    <!-- Load Tailwind CSS -->
+    <title>A Tribute to Nirmal Mali Boss</title>
+    
+    <!-- Load Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Noto Sans Devanagari (for Hindi) and Inter (for modern feel) fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* Use the Inter font */
+        /* Apply the loaded font to the entire page */
         body {
-            font-family: 'Inter', sans-serif;
+            /* Use Inter as the base, Noto Sans Devanagari will automatically be used for Hindi characters */
+            font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+            /* Hide any potential overflow from animations */
+            overflow: hidden;
+            /* Base background gradient, will be visible behind particles */
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
 
-        /* Import the Inter font */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-
-        /* Heart animation */
-        .heart {
-            position: fixed; /* Use fixed to float over everything */
-            top: -10vh; /* Start above the screen */
-            font-size: 1.5rem;
-            pointer-events: none; /* Hearts shouldn't be clickable */
-            z-index: 10; /* A high z-index, but below the main content */
-            animation: fall linear;
+        /* --- Colorful Particle Background Animation --- */
+        
+        /* Container for the animated particles */
+        .particle-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            overflow: hidden;
         }
 
-        @keyframes fall {
+        /* Base style for each particle */
+        .particle-background span {
+            position: absolute;
+            bottom: -50px; /* Start off-screen */
+            font-size: 24px;
+            opacity: 0; /* Start invisible */
+            /* Use will-change for better animation performance */
+            will-change: transform, opacity;
+            /* Apply the 'fly' animation */
+            animation: fly 15s linear infinite;
+        }
+
+        /* Keyframes for the gentle, flying movement */
+        @keyframes fly {
             0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.7;
+            }
+            20% {
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateY(-40vh) translateX(30px) rotate(15deg);
+            }
+            80% {
+                opacity: 0.9;
             }
             100% {
-                /* Move down and add a slight horizontal drift and rotation for effect */
-                transform: translateY(110vh) rotate(var(--rotate-end)) translateX(var(--drift));
+                /* End far off-screen */
+                transform: translateY(-110vh) translateX(-20px) rotate(-10deg);
                 opacity: 0;
             }
         }
-    </style>
-</head>
-<body class="bg-gradient-to-br from-pink-300 via-red-300 to-pink-400 h-screen w-full overflow-hidden flex items-center justify-center relative">
-
-    <!-- Main content card with glassmorphism effect -->
-    <div class="relative z-20 bg-white/40 backdrop-blur-lg rounded-2xl shadow-xl p-8 md:p-12 text-center text-gray-800 max-w-lg mx-4">
-        <h1 class="text-3xl md:text-5xl font-bold text-red-700 drop-shadow-sm mb-4">
-            Welcome, Seniors!
-        </h1>
-        <p class="text-lg md:text-2xl font-medium text-red-900">
-            To the amazing girls and boys of Government Medical College, Bundi.
-        </p>
-        <p class="text-xl md:text-3xl font-medium text-red-800 mt-4">
-            <span id="time-greeting"></span> आदरणीय आयुर्विज्ञान श्रेष्ठ
-        </p>
-        <div class="text-5xl md:text-7xl mt-6 text-pink-500 animate-pulse">
-            💖
-        </div>
-    </div>
-
-    <!-- Container for hearts (optional, but good for organization) -->
-    <div id="heart-container" class="absolute inset-0 z-10"></div>
-
-    <script>
-        const heartContainer = document.getElementById('heart-container') || document.body;
-
-        // --- नई ग्रीटिंग स्क्रिप्ट ---
-        function setGreeting() {
-            const greetingElement = document.getElementById('time-greeting');
-            if (!greetingElement) return; // सुनिश्चित करें कि एलिमेंट मौजूद है
-
-            const currentHour = new Date().getHours(); // 0-23
-            let greetingText = '';
-
-            // सुबह 4:00 बजे से 11:59 बजे तक
-            if (currentHour >= 4 && currentHour < 12) {
-                greetingText = 'शुभ प्रभात';
+        
+        /* --- Card Entrance Animation --- */
+        
+        /* Keyframes to make the card fade in and scale up */
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
             }
-            // दोपहर 12:00 बजे से शाम 4:59 बजे (17:00) तक
-            else if (currentHour >= 12 && currentHour < 17) {
-                greetingText = 'शुभ अपराह्न';
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
             }
-            // शाम 5:00 बजे से सुबह 3:59 बजे तक
-            else {
-                greetingText = 'शुभ संध्या';
-            }
-            
-            greetingElement.innerText = greetingText;
         }
         
-        // पेज लोड होते ही ग्रीटिंग सेट करें
-        setGreeting();
-        // --- स्क्रिप्ट का अंत ---
-
-        // Array of different colored heart emojis
-        const heartEmojis = ['❤️', '💖', '💗', '💙', '💚', '💛', '💜', '🧡', '💕', '💞'];
-
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
-            
-            // Use a random heart emoji from the array
-            heart.innerText = heartEmojis[Math.floor(Math.random() * heartEmojis.length)]; 
-            
-            // Randomize starting position and size
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.fontSize = (Math.random() * 1.5 + 0.75) + 'rem'; // 0.75rem to 2.25rem
-            
-            // Randomize animation duration
-            const duration = Math.random() * 5 + 5; // 5 to 10 seconds
-            heart.style.animationDuration = duration + 's';
-            
-            // Randomize animation properties (drift and rotation)
-            heart.style.setProperty('--drift', (Math.random() - 0.5) * 200 + 'px'); // -100px to +100px
-            heart.style.setProperty('--rotate-end', (Math.random() - 0.5) * 60 + 'deg'); // -30deg to +30deg
-            
-            // Randomize opacity
-            heart.style.opacity = Math.random() * 0.5 + 0.3; // 0.3 to 0.8
-
-            heartContainer.appendChild(heart);
-
-            // Remove the heart after its animation is done
-            setTimeout(() => {
-                heart.remove();
-            }, duration * 1000); // duration is in seconds, so * 1000 for ms
+        /* Class to apply the animation */
+        .card-animate {
+            /* Apply the animation with a duration and easing */
+            animation: cardFadeIn 0.8s ease-out forwards;
+            /* Start with the card invisible before animation starts */
+            opacity: 0;
         }
+    </style>
+</head>
+<body>
 
-        // Create a new heart every 300ms
-        setInterval(createHeart, 300);
-    </script>
+    <!-- 
+      Animated Particle Background Container
+      A mix of hearts and butterflies, each with a different color/speed/delay.
+    -->
+    <div class="particle-background">
+        <!-- Hearts -->
+        <span style="left: 10%; animation-duration: 15s; animation-delay: -2s; filter: hue-rotate(0deg);">❤️</span>
+        <span style="left: 30%; animation-duration: 18s; animation-delay: -1s; filter: hue-rotate(60deg);">❤️</span>
+        <span style="left: 50%; animation-duration: 16s; animation-delay: -3s; filter: hue-rotate(120deg);">❤️</span>
+        <span style="left: 70%; animation-duration: 17s; animation-delay: -9s; filter: hue-rotate(180deg);">❤️</span>
+        <span style="left: 90%; animation-duration: 19s; animation-delay: -7s; filter: hue-rotate(240deg);">❤️</span>
+        <span style="left: 25%; animation-duration: 12s; animation-delay: -12s; filter: hue-rotate(300deg);">❤️</span>
+        <span style="left: 45%; animation-duration: 14s; animation-delay: -14s; filter: hue-rotate(15deg);">❤️</span>
+        <span style="left: 65%; animation-duration: 13s; animation-delay: -15s; filter: hue-rotate(75deg);">❤️</span>
+        
+        <!-- Butterflies -->
+        <span style="left: 20%; animation-duration: 12s; animation-delay: -5s; filter: hue-rotate(30deg);">🦋</span>
+        <span style="left: 40%; animation-duration: 14s; animation-delay: -8s; filter: hue-rotate(90deg);">🦋</span>
+        <span style="left: 60%; animation-duration: 13s; animation-delay: -6s; filter: hue-rotate(150deg);">🦋</span>
+        <span style="left: 80%; animation-duration: 11s; animation-delay: -4s; filter: hue-rotate(210deg);">🦋</span>
+        <span style="left: 15%; animation-duration: 15s; animation-delay: -10s; filter: hue-rotate(270deg);">🦋</span>
+        <span style="left: 35%; animation-duration: 18s; animation-delay: -11s; filter: hue-rotate(330deg);">🦋</span>
+        <span style="left: 55%; animation-duration: 16s; animation-delay: -13s; filter: hue-rotate(45deg);">🦋</span>
+    </div>
+
+    <!-- 
+      Main content container.
+      This appears on top of the animation background.
+    -->
+    <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
+        
+        <!-- 
+          The "Glassmorphism" Card
+          The backdrop-blur and semi-transparent background allow
+          the particles to be seen behind the card.
+        -->
+        <div class="card-animate w-full max-w-lg rounded-2xl bg-white/50 backdrop-blur-xl p-8 md:p-12 text-center shadow-2xl border border-white/20">
+            
+            <!-- 
+              Image
+            -->
+            <img 
+              src="https://raw.githubusercontent.com/kdec2025/Maininstagram/refs/heads/main/IMG_20251114_111547837.jpg" 
+              alt="Profile image of Nirmal Mali Boss"
+              class="w-24 h-24 rounded-full mx-auto mb-6 shadow-lg object-cover border-4 border-white/50"
+              onerror="this.src='https://placehold.co/100x100/6d28d9/ffffff?text=Image&font=sans'; this.onerror=null;"
+            >
+            
+            <!-- Header section with the name and affiliation -->
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
+                आदरणीय निर्मल माली बॉस
+            </h1>
+            <p class="text-lg text-slate-700 mb-8">
+                जी.एम.सी. बूंदी
+            </p>
+
+            <!-- A modern, gradient divider -->
+            <hr class="w-1/3 mx-auto h-0.5 border-none bg-gradient-to-r from-transparent via-indigo-400 to-transparent mb-8">
+
+            <!-- 
+              The main message with a "Gradient Text" effect
+            -->
+            <p class="text-2xl md:text-3xl font-bold leading-relaxed bg-gradient-to-r from-indigo-600 to-purple-700 bg-clip-text text-transparent">
+                "गुस्ताखी माफ़ आदरणीय आयुर्विज्ञान श्रेष्ठ।"
+            </p>
+
+        </div>
+        
+    </div>
+
 </body>
 </html>
