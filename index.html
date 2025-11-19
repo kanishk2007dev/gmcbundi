@@ -1,171 +1,338 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Ensures proper scaling on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Tribute to Nirmal Mali Boss</title>
-    
-    <!-- Load Tailwind CSS for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Load Noto Sans Devanagari (for Hindi) and Inter (for modern feel) fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    
+    <title>Batch 2025 CR Election</title>
+    <!-- Load Tailwind CSS CDN for modern, responsive styling --><script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Apply the loaded font to the entire page */
-        body {
-            /* Use Inter as the base, Noto Sans Devanagari will automatically be used for Hindi characters */
-            font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
-            /* Hide any potential overflow from animations */
+        /* Custom font setup */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styling for the results panel */
+        #results-panel {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
             overflow: hidden;
-            /* Base background gradient, will be visible behind particles */
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .results-open {
+            max-height: 500px !important; /* Arbitrary large value */
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
         }
 
-        /* --- Colorful Particle Background Animation --- */
-        
-        /* Container for the animated particles */
-        .particle-background {
+        /* Watermark Styles: Added the large, faint background logo */
+        .watermark-background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        /* Base style for each particle */
-        .particle-background span {
-            position: absolute;
-            bottom: -50px; /* Start off-screen */
-            font-size: 24px;
-            opacity: 0; /* Start invisible */
-            /* Use will-change for better animation performance */
-            will-change: transform, opacity;
-            /* Apply the 'fly' animation */
-            animation: fly 15s linear infinite;
-        }
-
-        /* Keyframes for the gentle, flying movement */
-        @keyframes fly {
-            0% {
-                transform: translateY(0) translateX(0) rotate(0deg);
-                opacity: 0.7;
-            }
-            20% {
-                opacity: 0.9;
-            }
-            50% {
-                transform: translateY(-40vh) translateX(30px) rotate(15deg);
-            }
-            80% {
-                opacity: 0.9;
-            }
-            100% {
-                /* End far off-screen */
-                transform: translateY(-110vh) translateX(-20px) rotate(-10deg);
-                opacity: 0;
-            }
-        }
-        
-        /* --- Card Entrance Animation --- */
-        
-        /* Keyframes to make the card fade in and scale up */
-        @keyframes cardFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        /* Class to apply the animation */
-        .card-animate {
-            /* Apply the animation with a duration and easing */
-            animation: cardFadeIn 0.8s ease-out forwards;
-            /* Start with the card invisible before animation starts */
-            opacity: 0;
+            /* UPDATED BACKGROUND IMAGE URL */
+            background-image: url('https://raw.githubusercontent.com/kanishk2007dev/gmcbundi/3ba9bed8a9bd360ca811aec70d78953c00e24bdd/ChatGPT%20Image%20Nov%2013%2C%202025%2C%2010_38_51%20PM%20(1).svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 50%; /* Controls the size of the watermark */
+            opacity: 0.05; /* Makes it very faint */
+            z-index: 0; /* Ensures it stays behind the main content */
+            pointer-events: none; /* Allows clicks to pass through */
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 min-h-screen p-4 sm:p-8">
 
-    <!-- 
-      Animated Particle Background Container
-      A mix of hearts and butterflies, each with a different color/speed/delay.
-    -->
-    <div class="particle-background">
-        <!-- Hearts -->
-        <span style="left: 10%; animation-duration: 15s; animation-delay: -2s; filter: hue-rotate(0deg);">❤️</span>
-        <span style="left: 30%; animation-duration: 18s; animation-delay: -1s; filter: hue-rotate(60deg);">❤️</span>
-        <span style="left: 50%; animation-duration: 16s; animation-delay: -3s; filter: hue-rotate(120deg);">❤️</span>
-        <span style="left: 70%; animation-duration: 17s; animation-delay: -9s; filter: hue-rotate(180deg);">❤️</span>
-        <span style="left: 90%; animation-duration: 19s; animation-delay: -7s; filter: hue-rotate(240deg);">❤️</span>
-        <span style="left: 25%; animation-duration: 12s; animation-delay: -12s; filter: hue-rotate(300deg);">❤️</span>
-        <span style="left: 45%; animation-duration: 14s; animation-delay: -14s; filter: hue-rotate(15deg);">❤️</span>
-        <span style="left: 65%; animation-duration: 13s; animation-delay: -15s; filter: hue-rotate(75deg);">❤️</span>
+    <!-- Watermark Background Layer: Placed here for the fixed background effect --><div class="watermark-background"></div>
+
+    <!-- Main Application Container --><div id="app" class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden relative z-10">
         
-        <!-- Butterflies -->
-        <span style="left: 20%; animation-duration: 12s; animation-delay: -5s; filter: hue-rotate(30deg);">🦋</span>
-        <span style="left: 40%; animation-duration: 14s; animation-delay: -8s; filter: hue-rotate(90deg);">🦋</span>
-        <span style="left: 60%; animation-duration: 13s; animation-delay: -6s; filter: hue-rotate(150deg);">🦋</span>
-        <span style="left: 80%; animation-duration: 11s; animation-delay: -4s; filter: hue-rotate(210deg);">🦋</span>
-        <span style="left: 15%; animation-duration: 15s; animation-delay: -10s; filter: hue-rotate(270deg);">🦋</span>
-        <span style="left: 35%; animation-duration: 18s; animation-delay: -11s; filter: hue-rotate(330deg);">🦋</span>
-        <span style="left: 55%; animation-duration: 16s; animation-delay: -13s; filter: hue-rotate(45deg);">🦋</span>
+        <!-- Header: Updated to include the college name and both logos --><header class="p-6 sm:p-8 bg-indigo-600 text-white relative">
+            <!-- College Logo added here --><img src="https://raw.githubusercontent.com/kanishk2007dev/gmc-bundi/refs/heads/main/ChatGPT%20Image%20Nov%2013%2C%202025%2C%2010_38_51%20PM.png" 
+                 alt="GMC Bundi Logo" 
+                 class="absolute top-4 left-4 h-16 sm:h-20 w-auto rounded-full shadow-lg border-2 border-white"
+                 onerror="this.onerror=null; this.src='https://placehold.co/80x80/ffffff/000000?text=GMC'">
+
+            <div class="ml-24 sm:ml-28"> <!-- Margin to make space for the college logo --><h2 class="text-xl sm:text-2xl font-semibold text-indigo-200 mb-1">
+                    GOVERNMENT MEDICAL COLLEGE BUNDI
+                </h2>
+                <h1 class="text-3xl sm:text-4xl font-extrabold flex items-center">
+                    <!-- Election Commission Logo --><img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Election_Commission_of_India_Logo.svg" 
+                         alt="Election Commission of India Logo" 
+                         class="w-10 h-10 mr-3 bg-white p-1 rounded-full shadow-lg"
+                         onerror="this.onerror=null; this.src='https://placehold.co/40x40/ffffff/000000?text=ECI'">
+                    Batch 2025 CR Election
+                </h1>
+                <p class="mt-2 text-indigo-200 text-lg">Select your Class Representative. Your vote is confidential.</p>
+            </div>
+        </header>
+
+        <!-- Voting Area --><main class="p-6 sm:p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Candidates for CR</h2>
+            
+            <!-- Candidate Grid: Adjusted to handle 4 columns on large screens --><div id="candidate-list" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                <!-- Candidate Cards will be generated here by JavaScript --></div>
+
+            <!-- Action Area / Results Toggle --><div class="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center">
+                <p id="voting-status" class="text-lg font-semibold text-gray-600 mb-4 sm:mb-0">
+                    <span id="vote-message">Please cast your vote.</span>
+                </p>
+                <button id="toggle-results-btn" onclick="toggleResults()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                    Show Live Results
+                </button>
+            </div>
+            
+            <!-- Results Panel --><div id="results-panel" class="mt-4 bg-blue-50 rounded-xl p-0 transition-all duration-300">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">Election Results (Simulated)</h3>
+                <div id="results-content" class="space-y-4">
+                    <!-- Results will be displayed here --></div>
+            </div>
+
+            <!-- Info Message Box (Modal Substitute) --><div id="info-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 z-50">
+                <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center">
+                    <svg id="modal-icon" class="w-12 h-12 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h4 id="modal-title" class="text-xl font-bold mt-4 text-gray-800">Vote Recorded!</h4>
+                    <p id="modal-body" class="mt-2 text-gray-600"></p>
+                    <button onclick="closeModal()" class="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-150">
+                        Got it
+                    </button>
+                </div>
+            </div>
+
+        </main>
+        
+        <!-- Footer / Disclaimer --><footer class="p-4 bg-gray-100 text-center text-sm text-gray-500 border-t rounded-b-2xl">
+            <p class="mb-1">Created by KANISHK MBBS STUNDENT AT GMC BUNDI</p>
+            <p>CR Election for Batch 2025 at GMC Bundi | Disclaimer: This is a front-end simulation using Local Storage. Not suitable for a real, secure election.</p>
+        </footer>
+
     </div>
 
-    <!-- 
-      Main content container.
-      This appears on top of the animation background.
-    -->
-    <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
-        
-        <!-- 
-          The "Glassmorphism" Card
-          The backdrop-blur and semi-transparent background allow
-          the particles to be seen behind the card.
-        -->
-        <div class="card-animate w-full max-w-lg rounded-2xl bg-white/50 backdrop-blur-xl p-8 md:p-12 text-center shadow-2xl border border-white/20">
+    <!-- JavaScript Logic --><script>
+        // UPDATED CANDIDATE LIST
+        const candidates = [
+            // MAYANK MEENA with actual photo URL
+            { id: 1, name: "MAYANK MEENA", manifesto: "Focussing on personalized academic support and mentorship programs.", color: "red-500", photo: "https://raw.githubusercontent.com/kanishk2007dev/gmc-bundi/refs/heads/main/Screenshot%202025-11-19%20203457.png" },
+            // AnVesh with actual photo URL
+            { id: 2, name: "AnVesh", manifesto: "Organizing engaging extracurricular activities and boosting batch spirit.", color: "green-500", photo: "https://raw.githubusercontent.com/kanishk2007dev/gmc-bundi/refs/heads/main/Screenshot%202025-11-19%20203451.png" },
+            // SHYAM SUNDAR KAVIA with photo URL
+            { id: 3, name: "Shyam Sundar Kavia", manifesto: "Improving classroom infrastructure and establishing a seamless feedback channel.", color: "blue-500", photo: "https://raw.githubusercontent.com/kanishk2007dev/gmc-bundi/refs/heads/main/Screenshot%202025-11-19%20203506.png" },
+            // Existing CR placeholder
+            { id: 4, name: "Existing CR", manifesto: "Continuity of current initiatives and maximizing resource utilization.", color: "purple-500", photo: "https://placehold.co/100x100/ede9fe/6d28d9?text=ECR" }
+        ];
+
+        // Global state for user voting status
+        let userHasVoted = localStorage.getItem('hasVotedCR2025') === 'true';
+        let votedFor = localStorage.getItem('votedForCR2025');
+
+        /**
+         * Initializes the voting application on load.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCandidates();
+            updateVotingStatus();
+            loadResults();
+        });
+
+        /**
+         * Renders candidate cards into the DOM.
+         */
+        function renderCandidates() {
+            const listContainer = document.getElementById('candidate-list');
+            listContainer.innerHTML = '';
             
-            <!-- 
-              Image
-            -->
-            <img 
-              src="https://raw.githubusercontent.com/kdec2025/Maininstagram/refs/heads/main/IMG_20251114_111547837.jpg" 
-              alt="Profile image of Nirmal Mali Boss"
-              class="w-24 h-24 rounded-full mx-auto mb-6 shadow-lg object-cover border-4 border-white/50"
-              onerror="this.src='https://placehold.co/100x100/6d28d9/ffffff?text=Image&font=sans'; this.onerror=null;"
-            >
+            candidates.forEach(candidate => {
+                const card = document.createElement('div');
+                card.className = `bg-white border border-${candidate.color} p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between h-full`;
+                card.innerHTML = `
+                    <div>
+                        <img src="${candidate.photo}" alt="Photo of ${candidate.name}" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-${candidate.color}" 
+                            onerror="this.onerror=null; this.src='https://placehold.co/100x100/CCCCCC/000000?text=${candidate.name.charAt(0)}';">
+                        <h3 class="text-xl font-bold text-gray-900 text-center">${candidate.name}</h3>
+                        <p class="text-sm text-gray-500 text-center mb-4">Candidate #${candidate.id}</p>
+                        <p class="text-gray-700 mt-2 text-center text-sm">${candidate.manifesto}</p>
+                    </div>
+                    <button id="vote-btn-${candidate.id}" onclick="castVote(${candidate.id}, '${candidate.name}')" 
+                        class="mt-6 w-full bg-${candidate.color} text-white font-semibold py-3 rounded-xl shadow-md transition duration-200 hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        Vote for ${candidate.name.split(' ')[0]}
+                    </button>
+                `;
+                listContainer.appendChild(card);
+            });
+            updateVoteButtons();
+        }
+
+        /**
+         * Updates the state and message displayed to the user.
+         */
+        function updateVotingStatus() {
+            const statusElement = document.getElementById('vote-message');
+            const allVoteButtons = document.querySelectorAll('.vote-button');
+
+            if (userHasVoted) {
+                statusElement.innerHTML = `<span class="text-green-600">You have successfully voted for <strong>${votedFor}</strong>.</span>`;
+            } else {
+                statusElement.textContent = "Please cast your vote to proceed.";
+            }
+            updateVoteButtons();
+        }
+
+        /**
+         * Disables all vote buttons if the user has already voted.
+         */
+        function updateVoteButtons() {
+            candidates.forEach(candidate => {
+                const button = document.getElementById(`vote-btn-${candidate.id}`);
+                if (button) {
+                    if (userHasVoted) {
+                        button.disabled = true;
+                        button.textContent = votedFor === candidate.name ? 'Voted' : 'Voted';
+                        button.classList.remove('hover:bg-opacity-90');
+                        button.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    } else {
+                        button.disabled = false;
+                        button.textContent = `Vote for ${candidate.name.split(' ')[0]}`;
+                        button.classList.add('hover:bg-opacity-90');
+                        button.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    }
+                }
+            });
+        }
+
+        /**
+         * Simulates casting a vote.
+         * @param {number} candidateId - The ID of the candidate.
+         * @param {string} candidateName - The name of the candidate.
+         */
+        function castVote(candidateId, candidateName) {
+            if (userHasVoted) {
+                showModal('Alert', 'You have already cast your vote.', 'orange');
+                return;
+            }
+
+            // 1. Simulate saving the vote
+            const votesKey = 'cr2025Votes';
+            let voteCounts = JSON.parse(localStorage.getItem(votesKey) || '{}');
             
-            <!-- Header section with the name and affiliation -->
-            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-                आदरणीय निर्मल माली बॉस
-            </h1>
-            <p class="text-lg text-slate-700 mb-8">
-                जी.एम.सी. बूंदी
-            </p>
+            // Initialize count if candidate is new
+            if (!voteCounts[candidateName]) {
+                voteCounts[candidateName] = 0;
+            }
+            
+            // Increment and save
+            voteCounts[candidateName] += 1;
+            localStorage.setItem(votesKey, JSON.stringify(voteCounts));
 
-            <!-- A modern, gradient divider -->
-            <hr class="w-1/3 mx-auto h-0.5 border-none bg-gradient-to-r from-transparent via-indigo-400 to-transparent mb-8">
+            // 2. Update user status
+            localStorage.setItem('hasVotedCR2025', 'true');
+            localStorage.setItem('votedForCR2025', candidateName);
+            userHasVoted = true;
+            votedFor = candidateName;
 
-            <!-- 
-              The main message with a "Gradient Text" effect
-            -->
-            <p class="text-2xl md:text-3xl font-bold leading-relaxed bg-gradient-to-r from-indigo-600 to-purple-700 bg-clip-text text-transparent">
-                "गुस्ताखी माफ़ आदरणीय आयुर्विज्ञान श्रेष्ठ।"
-            </p>
+            // 3. Update UI
+            updateVotingStatus();
+            loadResults(); // Refresh results to show new vote
+            
+            // 4. Show success message
+            showModal('Vote Recorded!', `Thank you! Your vote for <strong>${candidateName}</strong> has been cast.`, 'green');
+        }
 
-        </div>
+        /**
+         * Toggles the visibility of the results panel.
+         */
+        function toggleResults() {
+            const resultsPanel = document.getElementById('results-panel');
+            const button = document.getElementById('toggle-results-btn');
+
+            if (resultsPanel.classList.contains('results-open')) {
+                resultsPanel.classList.remove('results-open');
+                button.textContent = 'Show Live Results';
+                button.classList.remove('bg-red-500');
+                button.classList.add('bg-blue-500');
+            } else {
+                loadResults(); // Load the latest results before opening
+                resultsPanel.classList.add('results-open');
+                button.textContent = 'Hide Results';
+                button.classList.remove('bg-blue-500');
+                button.classList.add('bg-red-500');
+            }
+        }
+
+        /**
+         * Loads and displays the simulated vote results.
+         */
+        function loadResults() {
+            const votesKey = 'cr2025Votes';
+            const voteCounts = JSON.parse(localStorage.getItem(votesKey) || '{}');
+            const resultsContent = document.getElementById('results-content');
+            resultsContent.innerHTML = '';
+
+            let totalVotes = Object.values(voteCounts).reduce((sum, count) => sum + count, 0);
+
+            if (totalVotes === 0) {
+                resultsContent.innerHTML = '<p class="text-gray-500 italic">No votes have been cast yet. Be the first!</p>';
+                return;
+            }
+
+            // Create a sorted array of results
+            const resultsArray = candidates.map(c => ({
+                name: c.name,
+                votes: voteCounts[c.name] || 0,
+                color: c.color
+            })).sort((a, b) => b.votes - a.votes);
+
+            resultsArray.forEach(result => {
+                const percentage = totalVotes > 0 ? ((result.votes / totalVotes) * 100).toFixed(1) : 0;
+                
+                const resultBar = document.createElement('div');
+                resultBar.className = 'flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4';
+                resultBar.innerHTML = `
+                    <p class="font-medium text-lg w-full sm:w-1/3 text-gray-800">${result.name}</p>
+                    <div class="relative w-full sm:w-2/3 h-8 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+                        <div style="width: ${percentage}%;" 
+                            class="absolute top-0 left-0 h-full bg-${result.color} transition-all duration-500 ease-out">
+                        </div>
+                        <span class="absolute right-0 top-0 h-full flex items-center pr-3 font-bold text-white text-sm" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                            ${result.votes} Votes (${percentage}%)
+                        </span>
+                    </div>
+                `;
+                resultsContent.appendChild(resultBar);
+            });
+        }
         
-    </div>
+        /**
+         * Shows a custom modal message box.
+         * @param {string} title - The title of the modal.
+         * @param {string} body - The body content (can contain HTML).
+         * @param {string} iconColor - The Tailwind color for the icon (e.g., 'green', 'red', 'orange').
+         */
+        function showModal(title, body, iconColor) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = body;
+            
+            const icon = document.getElementById('modal-icon');
+            icon.className = `w-12 h-12 mx-auto text-${iconColor}-500`;
 
+            // Simple switch to pick the right icon based on color/context
+            if (iconColor === 'green') {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+            } else if (iconColor === 'orange') {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+            }
+
+            document.getElementById('info-modal').classList.remove('hidden');
+        }
+
+        /**
+         * Hides the custom modal message box.
+         */
+        function closeModal() {
+            document.getElementById('info-modal').classList.add('hidden');
+        }
+
+    </script>
 </body>
 </html>
