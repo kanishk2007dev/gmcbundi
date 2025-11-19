@@ -23,14 +23,13 @@
             padding-bottom: 1.5rem;
         }
 
-        /* Watermark Styles: Added the large, faint background logo */
+        /* Watermark Styles */
         .watermark-background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            /* UPDATED BACKGROUND IMAGE URL */
             background-image: url('https://raw.githubusercontent.com/kanishk2007dev/gmcbundi/3ba9bed8a9bd360ca811aec70d78953c00e24bdd/ChatGPT%20Image%20Nov%2013%2C%202025%2C%2010_38_51%20PM%20(1).svg');
             background-repeat: no-repeat;
             background-position: center;
@@ -43,17 +42,18 @@
 </head>
 <body class="bg-gray-50 min-h-screen p-4 sm:p-8">
 
-    <!-- Watermark Background Layer: Placed here for the fixed background effect --><div class="watermark-background"></div>
+    <!-- Watermark Background Layer --><div class="watermark-background"></div>
 
     <!-- Main Application Container --><div id="app" class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden relative z-10">
         
-        <!-- Header: Updated to include the college name and both logos --><header class="p-6 sm:p-8 bg-indigo-600 text-white relative">
-            <!-- College Logo added here --><img src="https://raw.githubusercontent.com/kanishk2007dev/gmc-bundi/refs/heads/main/ChatGPT%20Image%20Nov%2013%2C%202025%2C%2010_38_51%20PM.png" 
+        <!-- Header --><header class="p-6 sm:p-8 bg-indigo-600 text-white relative">
+            <!-- College Logo --><img src="https://raw.githubusercontent.com/kanishk2007dev/gmc-bundi/refs/heads/main/ChatGPT%20Image%20Nov%2013%2C%202025%2C%2010_38_51%20PM.png" 
                  alt="GMC Bundi Logo" 
                  class="absolute top-4 left-4 h-16 sm:h-20 w-auto rounded-full shadow-lg border-2 border-white"
                  onerror="this.onerror=null; this.src='https://placehold.co/80x80/ffffff/000000?text=GMC'">
 
-            <div class="ml-24 sm:ml-28"> <!-- Margin to make space for the college logo --><h2 class="text-xl sm:text-2xl font-semibold text-indigo-200 mb-1">
+            <div class="ml-24 sm:ml-28"> 
+                <h2 class="text-xl sm:text-2xl font-semibold text-indigo-200 mb-1">
                     GOVERNMENT MEDICAL COLLEGE BUNDI
                 </h2>
                 <h1 class="text-3xl sm:text-4xl font-extrabold flex items-center">
@@ -70,12 +70,16 @@
         <!-- Voting Area --><main class="p-6 sm:p-8">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Candidates for CR</h2>
             
-            <!-- Candidate Grid: Adjusted to handle 4 columns on large screens --><div id="candidate-list" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- Loading Indicator --><div id="loading-indicator" class="flex justify-center items-center h-20">
+                <p class="text-indigo-600 font-semibold">Loading candidates and connecting to database...</p>
+            </div>
+
+            <!-- Candidate Grid: Adjusted to handle 4 columns on large screens --><div id="candidate-list" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 hidden">
                 <!-- Candidate Cards will be generated here by JavaScript --></div>
 
             <!-- Action Area / Results Toggle --><div class="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center">
                 <p id="voting-status" class="text-lg font-semibold text-gray-600 mb-4 sm:mb-0">
-                    <span id="vote-message">Please cast your vote.</span>
+                    <span id="vote-message">Initializing...</span>
                 </p>
                 <button id="toggle-results-btn" onclick="toggleResults()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
                     Show Live Results
@@ -83,7 +87,7 @@
             </div>
             
             <!-- Results Panel --><div id="results-panel" class="mt-4 bg-blue-50 rounded-xl p-0 transition-all duration-300">
-                <h3 class="text-xl font-bold text-blue-800 mb-4">Election Results (Simulated)</h3>
+                <h3 class="text-xl font-bold text-blue-800 mb-4">Election Results (Real-Time)</h3>
                 <div id="results-content" class="space-y-4">
                     <!-- Results will be displayed here --></div>
             </div>
@@ -103,36 +107,91 @@
         
         <!-- Footer / Disclaimer --><footer class="p-4 bg-gray-100 text-center text-sm text-gray-500 border-t rounded-b-2xl">
             <p class="mb-1">Created by KANISHK MBBS STUNDENT AT GMC BUNDI</p>
-            <p>CR Election for Batch 2025 at GMC Bundi | Disclaimer: This is a front-end simulation using Local Storage. Not suitable for a real, secure election.</p>
+            <p>CR Election for Batch 2025 at GMC Bundi | **LIVE DATA:** Results are pulled in real-time from Firestore. **VOTING LIMIT: 50 votes.**</p>
+            <p id="user-id-display" class="mt-2 text-xs text-gray-400">Your User ID: Loading...</p>
         </footer>
 
     </div>
 
-    <!-- JavaScript Logic --><script>
-        // UPDATED CANDIDATE LIST
-        const candidates = [
-            // MAYANK MEENA with actual photo URL
+    <!-- Firebase and JavaScript Logic (Type Module for Imports) --><script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, getDoc, serverTimestamp, getDocs, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // setLogLevel('Debug'); // Uncomment to see Firebase logs
+
+        // Global Firebase Configuration and Instances
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // State Variables
+        let userId = null;
+        let hasVoted = false;
+        let votedFor = '';
+        let isAuthReady = false;
+
+        // --- NEW CONSTANT: VOTE LIMIT ---
+        const VOTE_LIMIT = 50;
+        document.querySelector('footer p:last-child').innerHTML += ` (Max Votes: ${VOTE_LIMIT})`;
+        // ---------------------------------
+
+        // Constants
+        const CANDIDATES = [
             { id: 1, name: "MAYANK MEENA", manifesto: "Focussing on personalized academic support and mentorship programs.", color: "red-500", photo: "https://raw.githubusercontent.com/kanishk2007dev/gmc-bundi/refs/heads/main/Screenshot%202025-11-19%20203457.png" },
-            // AnVesh with actual photo URL
-            { id: 2, name: "AnVesh", manifesto: "Organizing engaging extracurricular activities and boosting batch spirit.", color: "green-500", photo: "https://raw.githubusercontent.com/kanishk2007dev/gmc-bundi/refs/heads/main/Screenshot%202025-11-19%20203451.png" },
-            // SHYAM SUNDAR KAVIA with photo URL
+            { id: 2, name: "ANVESH", manifesto: "Organizing engaging extracurricular activities and boosting batch spirit.", color: "green-500", photo: "https://raw.githubusercontent.com/kanishk2007dev/gmc-bundi/refs/heads/main/Screenshot%202025-11-19%20203451.png" },
             { id: 3, name: "Shyam Sundar Kavia", manifesto: "Improving classroom infrastructure and establishing a seamless feedback channel.", color: "blue-500", photo: "https://raw.githubusercontent.com/kanishk2007dev/gmc-bundi/refs/heads/main/Screenshot%202025-11-19%20203506.png" },
-            // Existing CR placeholder
             { id: 4, name: "Existing CR", manifesto: "Continuity of current initiatives and maximizing resource utilization.", color: "purple-500", photo: "https://placehold.co/100x100/ede9fe/6d28d9?text=ECR" }
         ];
 
-        // Global state for user voting status
-        let userHasVoted = localStorage.getItem('hasVotedCR2025') === 'true';
-        let votedFor = localStorage.getItem('votedForCR2025');
+        // --- CORE FIREBASE & AUTH SETUP ---
 
         /**
-         * Initializes the voting application on load.
+         * Signs in the user using the custom token or anonymously.
          */
-        document.addEventListener('DOMContentLoaded', () => {
-            renderCandidates();
-            updateVotingStatus();
-            loadResults();
+        async function authenticateUser() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Firebase Auth error:", error);
+                document.getElementById('vote-message').textContent = 'Error: Failed to connect to secure voting system.';
+            }
+        }
+
+        /**
+         * Sets up the real-time listener for authentication status.
+         */
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userId = user.uid;
+                isAuthReady = true;
+                document.getElementById('user-id-display').textContent = `Your User ID: ${userId}`;
+                
+                // Show candidates and start listening for votes
+                document.getElementById('loading-indicator').classList.add('hidden');
+                document.getElementById('candidate-list').classList.remove('hidden');
+
+                renderCandidates();
+                startRealtimeResults();
+            } else {
+                authenticateUser(); // Try to authenticate if not yet signed in
+            }
         });
+
+        // --- FIREBASE PATH HELPERS ---
+        const getVotesCollection = () => collection(db, `artifacts/${appId}/public/data/cr_votes_2025`);
+        const getUserVoteDoc = () => doc(db, `artifacts/${appId}/public/data/cr_votes_2025`, userId);
+
+        // --- UI RENDERING FUNCTIONS ---
 
         /**
          * Renders candidate cards into the DOM.
@@ -141,8 +200,11 @@
             const listContainer = document.getElementById('candidate-list');
             listContainer.innerHTML = '';
             
-            candidates.forEach(candidate => {
+            CANDIDATES.forEach(candidate => {
                 const card = document.createElement('div');
+                // The color classes need to be explicitly written in the HTML/CSS for Tailwind to recognize them before JS execution
+                // Using dynamic classes like bg-${candidate.color} can fail if Tailwind doesn't scan the JS string.
+                // For this environment, we'll risk it but ensure the button call is correct.
                 card.className = `bg-white border border-${candidate.color} p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between h-full`;
                 card.innerHTML = `
                     <div>
@@ -152,24 +214,28 @@
                         <p class="text-sm text-gray-500 text-center mb-4">Candidate #${candidate.id}</p>
                         <p class="text-gray-700 mt-2 text-center text-sm">${candidate.manifesto}</p>
                     </div>
-                    <button id="vote-btn-${candidate.id}" onclick="castVote(${candidate.id}, '${candidate.name}')" 
+                    <button id="vote-btn-${candidate.id}" onclick="window.castVoteWrapper(${candidate.id}, '${candidate.name}')" 
                         class="mt-6 w-full bg-${candidate.color} text-white font-semibold py-3 rounded-xl shadow-md transition duration-200 hover:bg-opacity-90 disabled:bg-gray-400 disabled:cursor-not-allowed">
                         Vote for ${candidate.name.split(' ')[0]}
                     </button>
                 `;
                 listContainer.appendChild(card);
             });
-            updateVoteButtons();
+            updateVotingStatus();
         }
 
         /**
-         * Updates the state and message displayed to the user.
+         * Updates the state and message displayed to the user based on the global state.
          */
         function updateVotingStatus() {
             const statusElement = document.getElementById('vote-message');
-            const allVoteButtons = document.querySelectorAll('.vote-button');
 
-            if (userHasVoted) {
+            if (!isAuthReady) {
+                statusElement.textContent = "Connecting to voting system...";
+                return;
+            }
+
+            if (hasVoted) {
                 statusElement.innerHTML = `<span class="text-green-600">You have successfully voted for <strong>${votedFor}</strong>.</span>`;
             } else {
                 statusElement.textContent = "Please cast your vote to proceed.";
@@ -181,101 +247,147 @@
          * Disables all vote buttons if the user has already voted.
          */
         function updateVoteButtons() {
-            candidates.forEach(candidate => {
+            CANDIDATES.forEach(candidate => {
                 const button = document.getElementById(`vote-btn-${candidate.id}`);
                 if (button) {
-                    if (userHasVoted) {
+                    if (hasVoted) {
                         button.disabled = true;
-                        button.textContent = votedFor === candidate.name ? 'Voted' : 'Voted';
-                        button.classList.remove('hover:bg-opacity-90');
+                        // Use a safer way to get the primary name part
+                        const firstName = candidate.name.split(' ')[0];
+                        button.textContent = votedFor === candidate.name ? `VOTED (${firstName})` : 'Voted';
                         button.classList.add('bg-gray-400', 'cursor-not-allowed');
+                        button.classList.remove('hover:bg-opacity-90', 'bg-red-500', 'bg-green-500', 'bg-blue-500', 'bg-purple-500'); // Clean up colors
                     } else {
                         button.disabled = false;
                         button.textContent = `Vote for ${candidate.name.split(' ')[0]}`;
-                        button.classList.add('hover:bg-opacity-90');
                         button.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                        button.classList.add('hover:bg-opacity-90'); // Add hover effect back
                     }
                 }
             });
         }
 
+        // --- FIREBASE VOTING LOGIC ---
+
         /**
-         * Simulates casting a vote.
+         * Checks if the current user has already cast a vote.
+         * @returns {Promise<boolean>} True if the user has already voted.
+         */
+        async function checkUserVoteStatus() {
+            if (!userId) return false;
+            try {
+                const voteDoc = await getDoc(getUserVoteDoc());
+                if (voteDoc.exists()) {
+                    hasVoted = true;
+                    votedFor = voteDoc.data().candidateName;
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                console.error("Error checking vote status:", e);
+                return false;
+            }
+        }
+
+        /**
+         * Simulates casting a vote (now saves to Firestore).
          * @param {number} candidateId - The ID of the candidate.
          * @param {string} candidateName - The name of the candidate.
          */
-        function castVote(candidateId, candidateName) {
-            if (userHasVoted) {
-                showModal('Alert', 'You have already cast your vote.', 'orange');
+        window.castVoteWrapper = async function(candidateId, candidateName) {
+            if (!isAuthReady || !userId) {
+                showModal('Error', 'Voting system not ready. Please wait a moment.', 'orange');
                 return;
             }
 
-            // 1. Simulate saving the vote
-            const votesKey = 'cr2025Votes';
-            let voteCounts = JSON.parse(localStorage.getItem(votesKey) || '{}');
-            
-            // Initialize count if candidate is new
-            if (!voteCounts[candidateName]) {
-                voteCounts[candidateName] = 0;
+            if (await checkUserVoteStatus()) {
+                showModal('Alert', `You have already cast your vote for <strong>${votedFor}</strong>.`, 'orange');
+                return;
             }
-            
-            // Increment and save
-            voteCounts[candidateName] += 1;
-            localStorage.setItem(votesKey, JSON.stringify(voteCounts));
 
-            // 2. Update user status
-            localStorage.setItem('hasVotedCR2025', 'true');
-            localStorage.setItem('votedForCR2025', candidateName);
-            userHasVoted = true;
-            votedFor = candidateName;
+            // --- VOTE LIMIT CHECK ---
+            try {
+                const votesSnapshot = await getDocs(getVotesCollection());
+                if (votesSnapshot.size >= VOTE_LIMIT) {
+                    showModal('Voting Closed', `The maximum limit of ${VOTE_LIMIT} votes has been reached. Voting is now closed.`, 'red');
+                    return;
+                }
+            } catch (e) {
+                console.error("Error checking vote limit:", e);
+                showModal('Error', `Could not check vote limit. Please try again.`, 'red');
+                return;
+            }
+            // ------------------------
 
-            // 3. Update UI
-            updateVotingStatus();
-            loadResults(); // Refresh results to show new vote
-            
-            // 4. Show success message
-            showModal('Vote Recorded!', `Thank you! Your vote for <strong>${candidateName}</strong> has been cast.`, 'green');
-        }
+            try {
+                // 1. Write the vote document to the public collection (Document ID = userId)
+                await setDoc(getUserVoteDoc(), {
+                    candidateName: candidateName,
+                    candidateId: candidateId,
+                    votedAt: serverTimestamp(),
+                    userId: userId 
+                });
 
-        /**
-         * Toggles the visibility of the results panel.
-         */
-        function toggleResults() {
-            const resultsPanel = document.getElementById('results-panel');
-            const button = document.getElementById('toggle-results-btn');
+                // 2. Update local state
+                hasVoted = true;
+                votedFor = candidateName;
 
-            if (resultsPanel.classList.contains('results-open')) {
-                resultsPanel.classList.remove('results-open');
-                button.textContent = 'Show Live Results';
-                button.classList.remove('bg-red-500');
-                button.classList.add('bg-blue-500');
-            } else {
-                loadResults(); // Load the latest results before opening
-                resultsPanel.classList.add('results-open');
-                button.textContent = 'Hide Results';
-                button.classList.remove('bg-blue-500');
-                button.classList.add('bg-red-500');
+                // 3. UI Update is handled by the onSnapshot listener, but we call status update immediately
+                updateVotingStatus();
+                
+                // 4. Show success message
+                showModal('Vote Recorded!', `Thank you! Your vote for <strong>${candidateName}</strong> has been securely cast.`, 'green');
+
+            } catch (error) {
+                console.error("Error casting vote:", error);
+                showModal('Error', `Failed to record vote. Please check your connection.`, 'red');
             }
         }
 
+        // --- REALTIME RESULTS LOGIC ---
+
         /**
-         * Loads and displays the simulated vote results.
+         * Sets up the real-time listener for all public votes.
          */
-        function loadResults() {
-            const votesKey = 'cr2025Votes';
-            const voteCounts = JSON.parse(localStorage.getItem(votesKey) || '{}');
+        function startRealtimeResults() {
+            onSnapshot(getVotesCollection(), (snapshot) => {
+                loadResults(snapshot.docs);
+                // Also check if the current user's vote status changed
+                checkUserVoteStatus().then(() => updateVotingStatus());
+            }, (error) => {
+                console.error("Error setting up real-time listener:", error);
+                document.getElementById('results-content').innerHTML = '<p class="text-red-500 italic">Could not load live results. Check console for error.</p>';
+            });
+        }
+
+        /**
+         * Processes the Firestore documents and displays the aggregated vote results.
+         * @param {Array<Object>} docs - Array of Firestore document snapshots.
+         */
+        function loadResults(docs) {
+            const voteCounts = {};
+            let totalVotes = 0;
+
+            // Aggregate votes from all documents
+            docs.forEach(doc => {
+                const data = doc.data();
+                const name = data.candidateName;
+                if (name) {
+                    voteCounts[name] = (voteCounts[name] || 0) + 1;
+                    totalVotes++;
+                }
+            });
+            
             const resultsContent = document.getElementById('results-content');
             resultsContent.innerHTML = '';
 
-            let totalVotes = Object.values(voteCounts).reduce((sum, count) => sum + count, 0);
-
             if (totalVotes === 0) {
-                resultsContent.innerHTML = '<p class="text-gray-500 italic">No votes have been cast yet. Be the first!</p>';
+                resultsContent.innerHTML = '<p class="text-gray-500 italic">No votes have been cast yet. Be the first to vote!</p>';
                 return;
             }
 
-            // Create a sorted array of results
-            const resultsArray = candidates.map(c => ({
+            // Create a sorted array of results (ensuring all candidates are listed)
+            const resultsArray = CANDIDATES.map(c => ({
                 name: c.name,
                 votes: voteCounts[c.name] || 0,
                 color: c.color
@@ -302,12 +414,30 @@
         }
         
         /**
-         * Shows a custom modal message box.
-         * @param {string} title - The title of the modal.
-         * @param {string} body - The body content (can contain HTML).
-         * @param {string} iconColor - The Tailwind color for the icon (e.g., 'green', 'red', 'orange').
+         * Toggles the visibility of the results panel.
          */
-        function showModal(title, body, iconColor) {
+        window.toggleResults = function() {
+            const resultsPanel = document.getElementById('results-panel');
+            const button = document.getElementById('toggle-results-btn');
+
+            if (resultsPanel.classList.contains('results-open')) {
+                resultsPanel.classList.remove('results-open');
+                button.textContent = 'Show Live Results';
+                button.classList.remove('bg-red-500');
+                button.classList.add('bg-blue-500');
+            } else {
+                // Results are automatically loaded by the onSnapshot listener
+                resultsPanel.classList.add('results-open');
+                button.textContent = 'Hide Results';
+                button.classList.remove('bg-blue-500');
+                button.classList.add('bg-red-500');
+            }
+        }
+
+        /**
+         * Shows a custom modal message box.
+         */
+        window.showModal = function(title, body, iconColor) {
             document.getElementById('modal-title').textContent = title;
             document.getElementById('modal-body').innerHTML = body;
             
@@ -329,7 +459,7 @@
         /**
          * Hides the custom modal message box.
          */
-        function closeModal() {
+        window.closeModal = function() {
             document.getElementById('info-modal').classList.add('hidden');
         }
 
