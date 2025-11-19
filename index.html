@@ -442,7 +442,8 @@
             document.getElementById('modal-body').innerHTML = body;
             
             const icon = document.getElementById('modal-icon');
-            icon.className = `w-12 h-12 mx-auto text-${iconColor}-500`;
+            // FIX: Use setAttribute('class', ...) for SVG elements instead of icon.className = ...
+            icon.setAttribute('class', `w-12 h-12 mx-auto text-${iconColor}-500`);
 
             // Simple switch to pick the right icon based on color/context
             if (iconColor === 'green') {
