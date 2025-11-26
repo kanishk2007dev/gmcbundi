@@ -139,7 +139,9 @@
 
             <div id="game-over-screen" class="hidden">
                 <div class="message" style="color: #ff6b6b;">GAME OVER</div>
-                <div style="background: #e8d576; border: 2px solid #000; padding: 20px; margin-bottom: 20px; border-radius: 8px; position: relative;">
+                <div style="background: #e8d576; border: 2px solid #000; padding: 20px; margin-bottom: 20px; border-radius: 8px; position: relative; text-align: center;">
+                    <!-- Add the custom image here -->
+                    <img src="https://raw.githubusercontent.com/kanishk2007dev/gmcbundi/refs/heads/main/IMG-20251126-WA0117.jpg" alt="Game Over Image" style="width: 100%; max-width: 200px; margin-bottom: 15px; border-radius: 4px; border: 2px solid #000;">
                     <div style="font-size: 12px; color: #e65f21; text-shadow: none; margin-bottom: 5px;">SCORE</div>
                     <div id="final-score" style="font-size: 24px; color: #fff; text-shadow: 2px 2px 0 #000;">0</div>
                     <div style="font-size: 12px; color: #e65f21; text-shadow: none; margin-top: 10px; margin-bottom: 5px;">BEST</div>
@@ -218,8 +220,8 @@
             }),
             new Promise(resolve => {
                 birdImg.onload = resolve;
-                // Using the bird image you requested
-                birdImg.src = 'https://raw.githubusercontent.com/kanishk2007dev/kanishk/refs/heads/main/IMG-20251126-WA0026.jpg';
+                // Using the NEW bird image you requested
+                birdImg.src = 'https://raw.githubusercontent.com/kanishk2007dev/gmcbundi/refs/heads/main/IMG-20251126-WA0016.jpg';
             })
         ]);
 
